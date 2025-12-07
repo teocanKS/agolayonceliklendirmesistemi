@@ -4,3 +4,4 @@ node_modules/
 temp_sunucu/
 temp_reference/
 archive/
+*.pdf
