@@ -39,7 +39,6 @@ Eğer henüz yapmadıysan:
     *   `DB_PASSWORD`: (Bulut şifresi)
     *   `DB_NAME`: (Bulut veritabanı adı - genelde defaultdb)
     *   `DB_PORT`: (Bulut portu - genelde 3306 veya farklı olabilir)
-    *   `DB_SSL`: `true` (Eğer "Self-signed certificate" hatası alırsan veya bağlantı reddedilirse bunu ekle)
 5.  **"Deploy"** butonuna bas! 🚀
 
 ## Adım 4: Son Kontrol
