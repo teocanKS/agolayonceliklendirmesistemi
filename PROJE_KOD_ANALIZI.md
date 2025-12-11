@@ -1,51 +1,56 @@
-# Proje Kod Analizi ve KDS Eşleştirmesi
+# Proje Kod Analizi ve KDS Dönüşüm Raporu
 
-Bu doküman, projedeki dosyaların ve kod bloklarının hangi KDS (Karar Destek Sistemi) maddesini karşıladığını teknik olarak açıklar.
+## 1. Genel Yapı
+Proje, Node.js + Express backend ve Vanilla JS frontend mimarisi üzerine kurulmuş bir web tabanlı Karar Destek Sistemidir (KDS). Veritabanı olarak MySQL kullanılmaktadır.
 
-## 1. `public/scoring-engine.js` (Analitik Motor)
-Bu dosya projenin "beyni"dir ve karar verme mantığını içerir.
+**Dosya Yapısı:**
+- `/api`: Backend mantığı. `index.js` (entry point), `controllers/` (iş mantığı), `routers/` (yönlendirme).
+- `/public`: Frontend varlıkları. `index.html` (tek sayfa), `styles.css`, `app.js` (logic).
+- `/scripts`: Veritabanı kurulum (`schema.sql`) ve veri üretim (`seed_data.js`) scriptleri.
 
-*   **KDS Madde 7 (Analitik Modeller):** `PriorityScorer` sınıfı ve `calculateScore` fonksiyonu, olayları matematiksel bir modele göre puanlar.
-*   **KDS Madde 13 (Değişen Şartlara Uyum):** `weights` (ağırlıklar) objesi sabittir ancak `app.js` üzerinden dinamik olarak değiştirilebilir. Bu, modelin esnekliğini sağlar.
-*   **KDS Madde 2 (Yarı Yapısal Kararlar):** `getRecommendation` fonksiyonu, puana göre "ENGELLE" veya "İZLE" önerisi üretir. Bu kesin bir emir değil, bir öneridir.
+## 2. Mevcut Kod Analizi
 
-## 2. `public/app.js` (Frontend Mantığı)
-Kullanıcı etkileşimi ve veri görselleştirme burada yapılır.
+### Backend (`/api`)
+- **Güçlü Yönler:**
+  - `mysql2/promise` ile modern, asenkron DB bağlantısı kullanılıyor.
+  - Klasör yapısı modüler (`controllers`, `routers`).
+  - Hata yakalama (try-catch) blokları mevcut.
+  - `getStrategicInsights` fonksiyonu ile KDS'ye giriş yapılmış (Risk İndeksi hesabı).
+- **Zayıf Yönler / Eksikler:**
+  - **Kapsam:** Veriler sadece operasyonel (anlık/kısa vadeli). 'Strategic Insights' sadece son 3-6 günü karşılaştırıyor. İstenen 6-12 aylık projeksiyon yok.
+  - **Hardcoded Logic:** Öneri sitemi (Options A/B) dinamik veriden ziyade sert kurallara (if risk > 20) bağlı.
+  - **Veri Derinliği:** Aylık veya çeyreklik analiz yapan SQL sorguları yok.
 
-*   **KDS Madde 1 (Geleceği Planlama):** `updateCharts` fonksiyonu içindeki `riskTrendChart` (Line Chart), geçmiş veriden ziyade gelecekteki risk yoğunluğunu simüle ederek yöneticinin plan yapmasını sağlar.
-*   **KDS Madde 8 (Kullanıcı Etkileşimi):** `applyScenario` fonksiyonu, kullanıcının butonlara basarak ("DDoS Senaryosu" vb.) modelin çalışma şeklini anlık olarak değiştirmesini sağlar.
-*   **KDS Madde 14 (Düzensiz Zamanlarda Kullanım):** `refreshData` fonksiyonu, kullanıcının istediği an veritabanından en güncel veriyi çekmesine olanak tanır.
-*   **KDS Madde 5 (Kullanıcı Kontrolü):** `renderEvents` fonksiyonu, kullanıcının seçtiği filtreleri (`state.filters`) dikkate alarak tabloyu günceller.
+### Frontend (`/public`)
+- **Güçlü Yönler:**
+  - Modüler JS yapısı (Scoring Engine ayrılmış olabilir, `app.js` import kullanıyor).
+  - Temiz bir UI yapısı var, KPI kartları anlaşılır.
+  - **Filtreleme:** Client-side filtreleme performansı (az veri için) iyi.
+- **Kritik Sorunlar:**
+  - **Kütüphane İhlali:** Proje kurallarına aykırı olarak **Chart.js v3** CDN üzerinden kullanılıyor. Bunun tamamen kaldırılıp **HTML/CSS tabanlı (Vanilla JS)** grafiklere dönülmesi gerekiyor.
+  - **Simülasyon:** Gelecek tahmini (`riskData`) rastgele sayı üretimiyle (`Math.random()`) yapılıyor. Bu bir KDS için kabul edilemez; veriye dayalı olmalı.
 
-## 3. `public/index.html` (Arayüz)
-Kullanıcının gördüğü ekran tasarımıdır.
+### Veritabanı (`schema.sql`)
+- Tek tablo (`events`) yapısı var.
+- İndeksleme eksik (performans için `timestamp` veya `severity` indekslenebilir).
+- KDS için gerekli "Varlık Değeri", "Tehdit Kataloğu" gibi yan tablolar yok (fakat mevcut kapsamda `events` tablosu şişirilerek bu simüle edilebilir, schema bozulmadan devam edilecek).
 
-*   **KDS Madde 12 (Kullanım Kolaylığı):** Temiz CSS yapısı, renk kodları (Kırmızı=Kritik) ve anlaşılır yerleşim.
-*   **KDS Madde 9 (Stratejik ve Taktik):**
-    *   **Üst Kısım (KPI Kartları):** "Toplam Olay", "Ortalama Risk" gibi özet bilgiler üst düzey yöneticiler (Stratejik) içindir.
-    *   **Alt Kısım (Tablo):** Detaylı olay listesi operasyonel analistler (Taktik) içindir.
-*   **KDS Madde 11 (Grup Desteği):** Web tabanlı olduğu için tarayıcı üzerinden birden fazla kişi aynı anda erişebilir.
+## 3. KDS Kriterleri Gap Analizi (Mevcut vs Hedef)
 
-## 4. `api/controllers/eventController.js` (Backend Mantığı)
-Veritabanı ile arayüz arasındaki köprüdür.
+| KDS Özelliği | Mevcut Durum | Hedef (6-12 Ay Dönüşümü) |
+|--------------|--------------|--------------------------|
+| **Zaman Ufku** | Operasyonel (Günlük/Haftalık) | Taktiksel/Stratejik (Yıllık) |
+| **Gelecek Tahmini** | Rastgele (`Math.random`) | Heuristic Model (Geçmiş trende dayalı projeksiyon) |
+| **Senaryo Analizi** | Client-side basit ağırlık değişimi | Sunucu destekli, tarihsel veriye dayalı senaryolar |
+| **Görselleştirme** | Chart.js (Yasaklı) | Custom CSS/JS Grafikler (Power BI benzeri) |
+| **Veri Hacmi** | ~300 satır (Rastgele) | Binlerce satır (Mevsimsellik içeren 1 yıllık veri) |
 
-*   **KDS Madde 4 (Sürecin Tüm Aşamaları):** Veriyi ham halden (SQL) alıp, JSON formatında arayüze sunarak analiz sürecini başlatır.
-*   **KDS Madde 6 (Veri Tabanı Erişimi):** `db.query('SELECT * FROM events...')` komutu ile doğrudan MySQL veritabanına erişir.
+## 4. Tespit Edilen Riskler ve Öneriler
+1.  **Teknik Borç:** Chart.js bağımlılığı acilen kaldırılmalı.
+2.  **Veri Kalitesi:** `seed_data.js` scripti sadece son 7 günü üretiyor. Taktiksel karar desteği için bunun **geriye dönük 1 yıl** veri üretecek şekilde güncellenmesi lazım. Ayrıca "Kışın artan saldırı" gibi senaryolar veriye gömülmeli.
+3.  **Güvenlik:** `.env` dosyası gitignore'da olmalı (şu an kontrol edildi, var). SQL sorgularında parametre kullanımı (`?`) mevcut, bu korunmalı.
 
-## 5. `api/db/mysql_connect.js` (Veritabanı Bağlantısı)
-*   **KDS Madde 6 (Veri Tabanı Erişimi):** MySQL bağlantı havuzunu (pool) yönetir. Projenin gerçek bir veritabanı üzerinde çalıştığının kanıtıdır.
+## 5. Eylem Planı
+Analiz sonucunda, kodun **"Sadeleştirilmesi"** değil, **"Derinleştirilmesi"** gerektiği ortaya çıkmıştır. Hocanın seviyesini aşmadan (Framework yok, ORM yok), saf SQL ve JS ile daha akıllı bir analiz motoru yazılacaktır.
 
-## 6. `scripts/seed_data.js` (Veri Üretimi)
-*   **KDS Madde 4 (Veri Toplama):** Gerçek hayatta sensörlerden gelecek verileri simüle eder. Farklı senaryolara (DDoS, PortScan) uygun veri setleri oluşturarak sistemin test edilmesini sağlar.
-
-## Özet Tablo
-
-| Dosya / Fonksiyon | İlgili KDS Maddesi | Açıklama |
-| :--- | :--- | :--- |
-| `scoring-engine.js` | **7, 2, 13** | Puanlama algoritması, öneri sistemi, ağırlık yönetimi. |
-| `riskTrendChart` (app.js) | **1** | Gelecek 24 saatlik risk tahmini grafiği. |
-| `applyScenario` (app.js) | **8, 13** | Senaryo butonları ile modelin değiştirilmesi. |
-| `refreshData` (app.js) | **14, 6** | Anlık veri çekme ve veritabanı erişimi. |
-| `index.html` (KPI Cards) | **9** | Yöneticiler için stratejik özet. |
-| `index.html` (Table) | **9, 3** | Analistler için detay ve karar desteği. |
-| `mysql_connect.js` | **6** | MySQL veritabanı entegrasyonu. |
+**Onay:** Bu analiz doğrultusunda "Faz 2: Veri ve Altyapı" adımına geçilecektir.
