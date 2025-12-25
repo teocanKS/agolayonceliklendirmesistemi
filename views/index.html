@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Siber Güvenlik KDS v6</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        slate: { 850: '#151e2e', 900: '#0f172a', 950: '#020617' }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+
+        /* Range Slider Customization */
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 16px;
+            width: 16px;
+            border-radius: 50%;
+            background: #3b82f6;
+            margin-top: -6px;
+            box-shadow: 0 0 5px rgba(59, 130, 246, 0.5);
+        }
+
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            background: #334155;
+            border-radius: 2px;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-950 text-slate-100 font-sans h-screen flex overflow-hidden">
+
+<<<<<<< Updated upstream
+    <!-- SIDEBAR -->
+    <aside class="w-80 flex-shrink-0 bg-slate-900 border-r border-slate-800 flex flex-col h-full">
+        <!-- Brand -->
+        <div class="h-16 flex items-center px-6 border-b border-slate-800 bg-slate-900/50 backdrop-blur">
+            <i class="fa-solid fa-shield-halved text-blue-500 text-xl mr-3"></i>
+            <div>
+                <h1 class="font-bold text-lg tracking-tight">KDS Kokpit</h1>
+                <p class="text-xs text-slate-500">v6.0 Pro | Karar Destek</p>
+            </div>
+        </div>
+
+        <!-- Scrollable Content -->
+        <div class="flex-1 overflow-y-auto p-5 space-y-8">
+
+            <!-- PARAMETERS -->
+            <div>
+                <div class="flex items-center gap-2 mb-4 text-xs font-bold text-slate-400 uppercase tracking-wider">
+                    <i class="fa-solid fa-sliders"></i> Senaryo Parametreleri
+                </div>
+                <div id="params-container" class="space-y-5">
+                    <!-- JS Injected Here -->
+                </div>
+            </div>
+
+            <!-- STRATEGIES -->
+            <div>
+                <div class="h-px bg-slate-800 my-4"></div>
+            </div>
+
+        </div>
+
+        <!-- Sidebar Footer -->
+        <div class="p-4 border-t border-slate-800 text-center">
+            <button onclick="ParamsManager.reset()" class="text-xs text-slate-500 hover:text-white transition-colors">
+                <i class="fa-solid fa-rotate-right mr-1"></i> Varsayılan Ayarlar
+            </button>
+=======
+    
+    <aside id="sidebar"
+        class="w-80 flex-shrink-0 bg-slate-900 border-r border-slate-800 flex flex-col h-full transition-all duration-300 ease-in-out relative overflow-hidden">
+        
+        <div class="w-80 flex flex-col h-full">
+            
+            <div class="p-6 border-b border-slate-800 bg-slate-900/50 backdrop-blur flex items-start">
+                <i class="fa-solid fa-shield-halved text-blue-500 text-xl mr-3 mt-1 flex-shrink-0"></i>
+                <div>
+                    <h1 class="font-bold text-lg leading-tight tracking-tight">Ağ Olay Önceliklendirme Karar Destek
+                        Sistemi
+                    </h1>
+                    <p class="text-xs text-slate-500 mt-1">v6.0 Pro | Karar Destek</p>
+                </div>
+            </div>
+
+            
+            <div class="flex-1 overflow-y-auto p-6 space-y-8">
+
+                
+                <div>
+                    <div class="flex items-center gap-2 mb-4 text-xs font-bold text-slate-400 uppercase tracking-wider">
+                        <i class="fa-solid fa-sliders"></i> Senaryo Parametreleri
+                    </div>
+                    
+                    <div id="params-container" class="space-y-5">
+                        
+                    </div>
+                </div>
+
+                
+                <div>
+                    <div class="h-px bg-slate-800 my-4"></div>
+                </div>
+
+            </div>
+
+            
+            <div class="p-4 border-t border-slate-800 text-center">
+                <button onclick="ParamsManager.reset()"
+                    class="text-xs text-slate-500 hover:text-white transition-colors">
+                    <i class="fa-solid fa-rotate-right mr-1"></i> Varsayılan Ayarlar
+                </button>
+            </div>
+>>>>>>> Stashed changes
+        </div>
+    </aside>
+
+    
+    <main class="flex-1 flex flex-col h-full bg-slate-950 overflow-hidden relative">
+        
+        <header
+            class="h-16 border-b border-slate-800 flex items-center justify-between px-8 bg-slate-950/80 backdrop-blur z-10">
+            <div class="flex items-center gap-3">
+                <div id="connection-status"
+                    class="flex items-center gap-2 text-xs font-semibold bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-full text-slate-400">
+                    <span class="relative flex h-2 w-2">
+                        <span
+                            class="animate-ping absolute inline-flex h-full w-full rounded-full bg-slate-500 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-slate-500"></span>
+                    </span>
+                    Bağlantı Aranıyor...
+                </div>
+            </div>
+            <div class="text-xs text-slate-500 font-mono">
+                Son Güncelleme: <span id="last-update">--:--:--</span>
+            </div>
+        </header>
+
+        
+        <div class="flex-1 overflow-y-auto p-8 space-y-6">
+
+            
+            <div class="grid grid-cols-4 gap-6">
+                
+                <div
+                    class="bg-slate-900 border border-slate-800 rounded-xl p-5 relative overflow-hidden group hover:border-red-500/50 transition-colors">
+                    <div class="flex justify-between items-start z-10 relative">
+                        <div>
+                            <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Mevcut Risk</p>
+                            <h2 id="kpi-risk" class="text-3xl font-bold text-white">--</h2>
+                        </div>
+                        <div class="h-10 w-10 rounded-lg bg-slate-800 flex items-center justify-center text-red-500">
+                            <i class="fa-solid fa-triangle-exclamation text-lg"></i>
+                        </div>
+                    </div>
+                    <div class="mt-4 text-xs text-slate-500 flex items-center gap-2">
+                        <span class="text-red-400 font-semibold"><i class="fa-solid fa-arrow-up"></i> Yüksek</span>
+                        Veritabanı Analizi
+                    </div>
+                </div>
+
+                
+                <div
+                    class="bg-slate-900 border border-slate-800 rounded-xl p-5 relative overflow-hidden group hover:border-amber-500/50 transition-colors">
+                    <div class="flex justify-between items-start z-10 relative">
+                        <div>
+                            <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Stratejik
+                                İyileştirme</p>
+                            <h2 id="kpi-imp" class="text-3xl font-bold text-amber-500">%0</h2>
+                        </div>
+                        <div class="h-10 w-10 rounded-lg bg-slate-800 flex items-center justify-center text-amber-500">
+                            <i class="fa-solid fa-wand-magic-sparkles text-lg"></i>
+                        </div>
+                    </div>
+                    <div class="mt-4 text-xs text-slate-500">
+                        Seçilen planların etkisi
+                    </div>
+                </div>
+
+                
+                <div
+                    class="bg-slate-900 border border-slate-800 rounded-xl p-5 relative overflow-hidden group hover:border-green-500/50 transition-colors">
+                    <div class="flex justify-between items-start z-10 relative">
+                        <div>
+                            <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Hedeflenen Risk
+                            </p>
+                            <h2 id="kpi-target" class="text-3xl font-bold text-green-500">--</h2>
+                        </div>
+                        <div class="h-10 w-10 rounded-lg bg-slate-800 flex items-center justify-center text-green-500">
+                            <i class="fa-solid fa-bullseye text-lg"></i>
+                        </div>
+                    </div>
+                    <div class="mt-4 text-xs text-slate-500">
+                        Proje sonrası tahmin
+                    </div>
+                </div>
+
+                
+                <div
+                    class="bg-slate-900 border border-slate-800 rounded-xl p-5 relative overflow-hidden group hover:border-blue-500/50 transition-colors">
+                    <div class="flex justify-between items-start z-10 relative">
+                        <div>
+                            <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Olay Hacmi</p>
+                            <h2 id="kpi-vol" class="text-3xl font-bold text-white">--</h2>
+                        </div>
+                        <div class="h-10 w-10 rounded-lg bg-slate-800 flex items-center justify-center text-blue-500">
+                            <i class="fa-solid fa-layer-group text-lg"></i>
+                        </div>
+                    </div>
+                    <div class="mt-4 text-xs text-slate-500">
+                        Son 30 gün
+                    </div>
+                </div>
+            </div>
+
+            
+            <div class="mt-6">
+                <div class="flex items-center gap-3 mb-4">
+                    <h2 class="text-lg font-bold text-slate-100 flex items-center gap-2">
+                        <span class="w-1 h-6 bg-cyan-500 rounded-full"></span>
+                        STRATEJİK MÜDAHALE VE YATIRIM EKRANI (6-12 Ay)
+                    </h2>
+                    <span class="text-xs text-slate-500 bg-slate-800 px-2 py-1 rounded">Yöneticinin onayı beklenen
+                        aksiyonlar</span>
+                </div>
+
+                
+                
+                <div id="strategy-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                    
+                </div>
+            </div>
+
+            
+            <div class="grid grid-cols-3 gap-6 h-[400px]">
+
+                
+                <div class="col-span-2 bg-slate-900 border border-slate-800 rounded-xl p-6 flex flex-col">
+                    <div class="flex justify-between items-center mb-6">
+                        <div>
+                            <h3 class="font-bold text-slate-200">Kapasite ve Risk Projeksiyonu (Isı Haritası)</h3>
+                            <p class="text-xs text-slate-500 mt-1">Sistem Yükü vs Kurumsal Kapasite Analizi</p>
+                        </div>
+                        <div class="flex gap-4 text-xs font-bold">
+                            <span class="flex items-center gap-2"><span
+                                    class="w-2 h-2 rounded-full bg-green-500"></span> Güvenli</span>
+                            <span class="flex items-center gap-2"><span
+                                    class="w-2 h-2 rounded-full bg-amber-500"></span> Riskli</span>
+                            <span class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-red-500"></span>
+                                Kritik</span>
+                        </div>
+                    </div>
+
+                    <div class="flex-1 flex gap-4">
+<<<<<<< Updated upstream
+                        <!-- Y-Label -->
+                        <div class="flex flex-col justify-between text-[10px] text-slate-500 font-mono text-right py-1">
+=======
+                        
+                        <div
+                            class="flex flex-col justify-between text-xs font-semibold text-slate-400 font-sans text-right py-1">
+>>>>>>> Stashed changes
+                            <span>Critical</span><span>High</span><span>Medium</span><span>Low</span><span>Info</span>
+                        </div>
+                        
+                        <div id="heatmap-container" class="flex-1 grid grid-cols-12 grid-rows-5 gap-1">
+                            
+                        </div>
+                    </div>
+<<<<<<< Updated upstream
+                    <!-- X-Label -->
+                    <div class="ml-12 mt-2 grid grid-cols-12 text-[10px] text-slate-500 font-mono text-center">
+=======
+                    
+                    <div
+                        class="ml-12 mt-2 grid grid-cols-12 text-xs font-semibold text-slate-400 font-sans text-center">
+>>>>>>> Stashed changes
+                        <span>Oca</span><span>Şub</span><span>Mar</span><span>Nis</span><span>May</span><span>Haz</span>
+                        <span>Tem</span><span>Ağu</span><span>Eyl</span><span>Eki</span><span>Kas</span><span>Ara</span>
+                    </div>
+                </div>
+
+                
+                <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 flex flex-col">
+                    <div class="mb-6">
+                        <h3 class="font-bold text-slate-200">Saldırı Vektörü Analizi</h3>
+                        <p class="text-xs text-slate-500 mt-1">Veritabanındaki tehdit türlerinin dağılımı</p>
+                    </div>
+                    <div id="vector-container" class="flex-1 flex flex-col justify-center space-y-4">
+                        
+                    </div>
+                </div>
+            </div>
+
+            
+            <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 flex-1 min-h-[200px] flex flex-col">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="h-2 w-2 bg-green-500 rounded-full animate-pulse"></div>
+                    <h3 class="font-bold text-slate-200 text-sm uppercase tracking-wider">Canlı Tehdit Akışı</h3>
+                </div>
+<<<<<<< Updated upstream
+                <div id="log-content" class="flex-1 overflow-y-auto font-mono text-xs space-y-1 text-slate-400 pr-2">
+                    <!-- JS Generated -->
+                </div>
+=======
+                <div id="log-content"
+                    class="flex-1 overflow-y-auto font-sans text-sm space-y-2 text-slate-300 pr-2 pb-2">
+                    
+                </div>
+
+                
+                <div
+                    class="mt-2 border-t border-slate-800 pt-2 flex justify-between items-center text-[10px] text-slate-500 font-mono">
+                    <button id="log-prev"
+                        class="text-slate-400 hover:text-white disabled:opacity-30 disabled:hover:text-slate-400 transition-colors">
+                        <i class="fa-solid fa-chevron-left"></i> Önceki
+                    </button>
+                    <span id="log-page-info">Sayfa 1 / 1</span>
+                    <button id="log-next"
+                        class="text-slate-400 hover:text-white disabled:opacity-30 disabled:hover:text-slate-400 transition-colors">
+                        Sonraki <i class="fa-solid fa-chevron-right"></i>
+                    </button>
+                </div>
+>>>>>>> Stashed changes
+            </div>
+
+        </div>
+    </main>
+
+    
+    <script src="js/params.js"></script>
+    <script src="scoring-engine.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>

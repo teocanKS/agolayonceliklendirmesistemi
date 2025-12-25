@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KDS - DDoS Analizi</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .decision-grid {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 24px;
+        }
+
+        .heatmap-container {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 4px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="navbar-container"></div>
+    <div class="app-container">
+        <header class="page-header">
+            <div>
+                <h1>DDoS ve Hacimsel Saldırı Analizi</h1>
+                <p class="subtitle">Trafik Anomalisi ve Kapasite Planlama Görünümü</p>
+            </div>
+            <div class="last-updated">
+                <button class="btn-primary" onclick="location.href='/decision'">Önlem Planla</button>
+            </div>
+        </header>
+
+        <div class="decision-grid">
+            
+            <aside>
+                <div id="manager-panel-container"></div>
+
+                <div class="kpi-card" style="margin-top:24px; border-left:4px solid var(--info);">
+                    <h3>ℹ️ Yönetici Özeti</h3>
+                    <div id="manager-note" style="font-size:0.85rem; color:#d1d5db; line-height:1.5; margin-top:8px;">
+                        Veri yükleniyor...
+                    </div>
+                </div>
+            </aside>
+
+            
+            <main>
+                <div class="chart-card">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                        <div>
+                            <h3>Mevsimsel DDoS Saldırı Yoğunluğu (Isı Haritası)</h3>
+                            <p class="chart-desc">Yılın aylarında (Sütun) günlere (Satır) göre saldırı hacimlerini
+                                gösterir.</p>
+                        </div>
+                        <div style="display:flex; gap:6px; font-size:0.75rem; align-items:center; color:#9ca3af;">
+                            <div
+                                style="width:12px; height:12px; background:rgba(59, 130, 246, 0.1); border-radius:2px;">
+                            </div> Normal
+                            <div style="width:12px; height:12px; background:rgba(239, 68, 68, 0.8); border-radius:2px;">
+                            </div> Kritik
+                        </div>
+                    </div>
+
+                    <div id="heatmap-container"
+                        style="display: grid; grid-template-columns: repeat(12, 1fr); gap: 4px; padding: 10px; min-height: 200px;">
+                        
+                    </div>
+
+                    <div
+                        style="display:grid; grid-template-columns: repeat(12, 1fr); font-size:0.75rem; color:#6b7280; text-align:center; padding-top:8px; border-top:1px solid #374151;">
+                        <span>Oca</span><span>Şub</span><span>Mar</span><span>Nis</span><span>May</span><span>Haz</span>
+                        <span>Tem</span><span>Ağu</span><span>Eyl</span><span>Eki</span><span>Kas</span><span>Ara</span>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <h3>Saldırı Vektör Dağılımı ve Etkileri</h3>
+                    <p class="chart-desc">Sisteme yönelik saldırı tiplerinin altyapı üzerindeki baskı türleri.</p>
+                    <div id="vector-chart" style="margin-top:20px;">
+                        
+                        <div class="dist-row">
+                            <div class="dist-label" style="width:120px;">UDP Flood</div>
+                            <div class="dist-bar-bg">
+                                <div class="dist-bar-fill" style="width: 45%; background: #ef4444;"></div>
+                            </div>
+                            <div class="dist-val"
+                                style="width:220px; text-align:right; font-size:0.75rem; color:#9ca3af;">%45 (Bant
+                                Genişliği Tüketimi)</div>
+                        </div>
+                        <div class="dist-row">
+                            <div class="dist-label" style="width:120px;">SYN Flood</div>
+                            <div class="dist-bar-bg">
+                                <div class="dist-bar-fill" style="width: 30%; background: #f97316;"></div>
+                            </div>
+                            <div class="dist-val"
+                                style="width:220px; text-align:right; font-size:0.75rem; color:#9ca3af;">%30 (Firewall
+                                Oturum Riski)</div>
+                        </div>
+                        <div class="dist-row">
+                            <div class="dist-label" style="width:120px;">HTTP Flood</div>
+                            <div class="dist-bar-bg">
+                                <div class="dist-bar-fill" style="width: 15%; background: #eab308;"></div>
+                            </div>
+                            <div class="dist-val"
+                                style="width:220px; text-align:right; font-size:0.75rem; color:#9ca3af;">%15 (Sunucu
+                                CPU/RAM Riski)</div>
+                        </div>
+                        
+                        <div class="dist-row">
+                            <div class="dist-label" style="width:120px;">DNS Amp</div>
+                            <div class="dist-bar-bg">
+                                <div class="dist-bar-fill" style="width: 10%; background: #3b82f6;"></div>
+                            </div>
+                            <div class="dist-val"
+                                style="width:220px; text-align:right; font-size:0.75rem; color:#9ca3af;">%10 (Servis
+                                Kesintisi)</div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="js/navbar.js"></script>
+    <script src="js/params.js"></script>
+    <script>
+        let globalData = null;
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            ParamsManager.renderPanel('manager-panel-container');
+
+            // Initial Fetch
+            const res = await fetch('/api/long-term-stats');
+            const json = await res.json();
+
+            if (json.success) {
+                globalData = json.data;
+                renderDashboard();
+            }
+
+            // Listen for params
+            window.addEventListener('kds-params-changed', () => {
+                renderDashboard();
+            });
+        });
+
+        function renderDashboard() {
+            if (!globalData) return;
+            const data = globalData;
+            const params = ParamsManager.getParams();
+
+            // KDS LOGIC: Threat vs. Defense Model (Risk = Impact / Control)
+            // Goal: "Capabilities reduce risk (Green)", "Weights increase risk (Red)"
+            // Requirement: "All 6 parameters must affect the result"
+
+            // 1. THREAT SCORE (Increases Saturation/Redness)
+            // - VolumeWeight: Direct multiplier for DDoS (Most important)
+            // - SeverityWeight: General risk aversion
+            // - AssetCriticality: High value asset = High stress
+            // - HumanFactor: High error probability = High stress
+            const threatScore =
+                (1 + params.volumeWeight * 1.5) +  // Major driver
+                (params.severityWeight * 0.5) +    // Compliance driver
+                (params.assetCriticality * 0.5) +  // Asset value
+                (params.humanFactor * 0.3);        // Uncertainty
+
+            // 2. DEFENSE SCORE (Increases Capacity/Greenness)
+            // - DetectionMaturity: Early warning reduces impact
+            // - ResponseCapacity: Ability to absorb attack
+            const defenseScore =
+                1 +
+                (params.detectionMaturity * 1.2) +
+                (params.responseCapacity * 1.5); // Capacity is king for DDoS
+
+            // 3. DYNAMIC CAPACITY CALCULATION
+            // Base tolerance of the infrastructure
+            const BASE_CAPACITY = 150;
+
+            // Formula: Capacity grows with Defense, shrinks with Threat perception
+            const dynamicCapacity = BASE_CAPACITY * (defenseScore / threatScore);
+
+            const container = document.getElementById('heatmap-container');
+            let html = '';
+
+            for (let row = 0; row < 5; row++) {
+                for (let col = 0; col < 12; col++) {
+                    const monthTotal = (data.datasets.Critical[col] || 0) + (data.datasets.High[col] || 0);
+
+                    // Daily Variance & Human Factor Noise
+                    // If Human Factor is high, variance (unpredictability) increases
+                    const noise = 1 + ((Math.random() - 0.5) * params.humanFactor * 0.2);
+                    let intensity = (monthTotal / 5) * (1 + (row * 0.2)) * noise;
+
+                    // Seasonal Winter Scenario
+                    if ((col === 0 || col === 1 || col === 11)) {
+                        intensity *= 1.5;
+                    }
+
+                    // Normalize based on dynamic capacity
+                    const ratio = Math.min(intensity, dynamicCapacity) / dynamicCapacity;
+
+                    // Color Logic: HSL
+                    // 0 -> Blue (210), 1 -> Red (0)
+                    let hue = 210 - (ratio * 210);
+
+                    let sat = 70 + (ratio * 30);
+                    let light = 60 - (ratio * 20);
+
+                    if (ratio < 0.2) { hue = 210; light = 85; sat = 40; } // Very light blue
+                    if (ratio > 0.95) { hue = 0; light = 40; sat = 100; } // Critical Red
+
+                    html += `<div style="background: hsl(${hue}, ${sat}%, ${light}%); height: 30px; border-radius: 2px; transition: background 0.3s ease;" title="Risk Oranı: %${Math.round(ratio * 100)}"></div>`;
+                }
+            }
+            container.innerHTML = html;
+
+            // Manager Note Update
+            const totalAttacks = data.datasets.Critical.reduce((a, b) => a + b, 0) + data.datasets.High.reduce((a, b) => a + b, 0);
+            const noteBox = document.getElementById('manager-note');
+
+            // Alarm Threshold adapts to Defense Score
+            // Better defense = We complain less = Higher Threshold
+            const alarmThreshold = 100 * defenseScore;
+
+            if (totalAttacks * threatScore > alarmThreshold) { // Compare Risk-Weighted Volume vs Defended Capacity
+                noteBox.innerHTML = `
+                    <strong style="color:#ef4444; display:block; margin-bottom:8px;">⚠️ Risk Toleransı Aşıldı</strong>
+                    Algılanan Tehdit Skoru (${threatScore.toFixed(1)}), Savunma Kapasitesini (${defenseScore.toFixed(1)}) zorluyor.
+                    <br><br>
+                    👉 <em>Neden: Kurumsal yetenekler (Tespit/Müdahale), mevcut risk iştahını (Parametreler) karşılamada yetersiz.</em>
+                `;
+            } else {
+                noteBox.innerHTML = `
+                    <strong style="color:#10b981">✅ Güvenli Operasyon Bölgesi</strong>
+                    Kurumsal savunma yetenekleri (Skor: ${defenseScore.toFixed(1)}), mevcut tehdit algısını yönetmek için yeterli seviyede.
+                `;
+            }
+        }
+    </script>
+</body>
+
+</html>

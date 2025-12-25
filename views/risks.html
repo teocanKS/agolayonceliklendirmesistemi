@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KDS - Tehdit Analizi</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .grid-2x2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .action-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .action-list li {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid #374151;
+            padding: 12px;
+            margin-bottom: 8px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .action-icon {
+            width: 32px;
+            height: 32px;
+            background: #1f2937;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="navbar-container"></div>
+    <div class="app-container">
+        <header class="page-header">
+            <div>
+                <h1>Tehdit ve İnsan Faktörü Analizi</h1>
+                <p class="subtitle">Kimlik Güvenliği ve Sosyal Mühendislik Risk Görünümü</p>
+            </div>
+            <div class="last-updated">
+                <button class="btn-primary" onclick="location.href='/decision'">Önlem Planla</button>
+            </div>
+        </header>
+
+        <div class="decision-grid">
+            
+            <aside>
+                <div id="manager-panel-container"></div>
+                <div class="kpi-card" style="margin-top:20px;">
+                    <h3>Brute Force Alarmı</h3>
+                    <div class="value" id="brute-force-value" style="color:var(--warning)">Yüksek</div>
+                    <p style="font-size:0.8rem; color:#9ca3af; margin-top:8px;">Haftasonları artış eğiliminde.</p>
+                </div>
+            </aside>
+
+            
+            <main class="grid-2x2">
+                
+                <div class="chart-card">
+                    <h3>Kimlik Tabanlı Tehditler (VPN/SSH)</h3>
+                    <p class="chart-desc">Yetkisiz erişim girişimlerinin protokol bazlı dağılımı.</p>
+                    <div style="margin-top:20px;">
+                        <div class="dist-row">
+                            <div class="dist-label">VPN Brute Force</div>
+                            <div class="dist-bar-bg">
+                                <div class="dist-bar-fill" style="width: 65%; background: var(--danger);"></div>
+                            </div>
+                            <div class="dist-val">65%</div>
+                        </div>
+                        <div class="dist-row">
+                            <div class="dist-label">SSH Dictionary</div>
+                            <div class="dist-bar-bg">
+                                <div class="dist-bar-fill" style="width: 25%; background: var(--warning);"></div>
+                            </div>
+                            <div class="dist-val">25%</div>
+                        </div>
+                        <div class="dist-row">
+                            <div class="dist-label">RDP Exploit</div>
+                            <div class="dist-bar-bg">
+                                <div class="dist-bar-fill" style="width: 10%; background: var(--info);"></div>
+                            </div>
+                            <div class="dist-val">10%</div>
+                        </div>
+                    </div>
+                </div>
+
+                
+                <div class="chart-card">
+                    <h3>İnsan Faktörü ve Phishing</h3>
+                    <p class="chart-desc">Personel kaynaklı güvenlik ihlali risk skoru (1-100).</p>
+                    <div style="display:flex; align-items:center; justify-content:center; height:150px;">
+                        <div style="text-align:center;">
+                            <div id="risk-score-value" style="font-size:3rem; font-weight:bold; color:var(--warning);">
+                                68</div>
+                            <div id="risk-score-label" style="color:#9ca3af; font-size:0.9rem;">Risk Endeksi
+                                (Orta-Yüksek)</div>
+                        </div>
+                    </div>
+                    <div style="font-size:0.8rem; color:#d1d5db; text-align:center; margin-top:-10px;">
+                        Departman liderleri ve yeni işe girişler hedef alınmakta.
+                    </div>
+                </div>
+
+                
+                <div class="chart-card" style="grid-column: span 2;">
+                    <h3>Eğilim Analizi: Saldırı Başarı Oranları</h3>
+                    <p class="chart-desc">Son 6 ayda engellenen vs. başarılı (şüpheli) oturum açma girişimleri.</p>
+                    <div class="css-chart-container" style="height:150px; align-items:flex-end;">
+                        
+                        <div class="chart-bar-col">
+                            <div class="chart-bar" style="height:30%; background:#374151;"></div>
+                            <div class="chart-label">Ay 1</div>
+                        </div>
+                        <div class="chart-bar-col">
+                            <div class="chart-bar" style="height:40%; background:#374151;"></div>
+                            <div class="chart-label">Ay 2</div>
+                        </div>
+                        <div class="chart-bar-col">
+                            <div class="chart-bar" style="height:35%; background:#374151;"></div>
+                            <div class="chart-label">Ay 3</div>
+                        </div>
+                        <div class="chart-bar-col">
+                            <div class="chart-bar" style="height:60%; background:var(--warning);"></div>
+                            <div class="chart-label">Ay 4</div>
+                        </div>
+                        <div class="chart-bar-col">
+                            <div class="chart-bar" style="height:80%; background:var(--danger);"></div>
+                            <div class="chart-label">Ay 5</div>
+                        </div>
+                        <div class="chart-bar-col">
+                            <div class="chart-bar" style="height:50%; background:#374151;"></div>
+                            <div class="chart-label">Ay 6</div>
+                        </div>
+                    </div>
+                </div>
+
+                
+                <div class="chart-card" style="grid-column: span 2;">
+                    <h3>Öncelikli Yönetim Aksiyonları</h3>
+                    <ul class="action-list">
+                        <li>
+                            <div class="action-icon" style="color:var(--danger)">!</div>
+                            <div>
+                                <strong>VPN Politikalarını Gözden Geçir</strong>
+                                <div style="font-size:0.8rem; color:#9ca3af;">Başarısız giriş denemeleri eşik değeri
+                                    aşmış durumda. Geo-IP engelleme önerilir.</div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="action-icon" style="color:var(--warning)">?</div>
+                            <div>
+                                <strong>Phishing Simülasyonu Planla</strong>
+                                <div style="font-size:0.8rem; color:#9ca3af;">İnsan faktörü riski artışta. Finans ve İK
+                                    ekipleri için eğitim tazelenmeli.</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="js/navbar.js"></script>
+    <script src="js/params.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // 1. Init Manager Panel
+            ParamsManager.renderPanel('manager-panel-container');
+
+            // 2. Initial Render
+            updateDashboard();
+
+            // 3. Listen for changes
+            window.addEventListener('kds-params-changed', () => {
+                updateDashboard();
+            });
+        });
+
+        function updateDashboard() {
+            // KDS Principle 8: Adaptability - Real-time update based on manager input
+            const params = ParamsManager.getParams();
+
+            // 1. Calculate THREAT SCORE (Risk Drivers)
+            // - Human Factor: Direct impact on Phishing (Weight 3.0)
+            // - Severity: General risk aversion (Weight 1.0)
+            // - Asset Criticality: Target value (Weight 1.5)
+            // - Volume: Noise level masking attacks (Weight 0.5)
+            const threatScore =
+                (params.humanFactor * 3.0) +
+                (params.severityWeight * 1.0) +
+                (params.assetCriticality * 1.5) +
+                (params.volumeWeight * 0.5);
+
+            // 2. Calculate DEFENSE SCORE (Mitigation)
+            // - Detection Maturity: Catches phishing/bruteforce early (Weight 2.5)
+            // - Response Capacity: Mitigates impact (Weight 2.0)
+            const defenseScore =
+                (params.detectionMaturity * 2.5) +
+                (params.responseCapacity * 2.0);
+
+            // 3. Determine Net Risk Index (0-100)
+            // Formula: Base 50 + Threat - Defense
+            // Max Threat ~6.0, Max Defense ~4.5. 
+            // Range: 50 + (60 - 45) = 65 (High Net Risk)
+            // Range: 50 + (0 - 0) = 50 (Neutral)
+            const netRisk = Math.max(10, Math.min(100, Math.round(50 + (threatScore * 10) - (defenseScore * 10))));
+
+            // A. Update Risk Score Display
+            const scoreEl = document.getElementById('risk-score-value');
+            const scoreLabelEl = document.getElementById('risk-score-label');
+
+            if (scoreEl) {
+                scoreEl.innerText = netRisk;
+
+                if (netRisk > 75) {
+                    scoreEl.style.color = 'var(--danger)';
+                    scoreLabelEl.innerText = 'Risk Endeksi (Kritik)';
+                } else if (netRisk > 55) {
+                    scoreEl.style.color = 'var(--warning)';
+                    scoreLabelEl.innerText = 'Risk Endeksi (Yüksek)';
+                } else if (netRisk > 35) {
+                    scoreEl.style.color = 'var(--brand)'; // Blue for medium
+                    scoreLabelEl.innerText = 'Risk Endeksi (Orta)';
+                } else {
+                    scoreEl.style.color = 'var(--success)';
+                    scoreLabelEl.innerText = 'Risk Endeksi (Güvenli)';
+                }
+            }
+
+            // B. Update Brute Force Alarm (Impact vs Capacity)
+            // If Response Capacity is High, we can handle high severity.
+            const alarmEl = document.getElementById('brute-force-value');
+
+            // Logic: If (Threat / Defense) > Threshold
+            const riskRatio = threatScore / (defenseScore || 0.1); // Avoid div by zero
+
+            if (alarmEl) {
+                if (riskRatio > 2.0) {
+                    alarmEl.innerText = "KRİTİK";
+                    alarmEl.style.color = "var(--danger)";
+                } else if (riskRatio > 1.2) {
+                    alarmEl.innerText = "Yüksek";
+                    alarmEl.style.color = "var(--warning)";
+                } else {
+                    alarmEl.innerText = "Yönetilebilir";
+                    alarmEl.style.color = "var(--success)";
+                }
+            }
+
+            // C. Update Trend Chart Bars (Visual Simulation)
+            // Higher Defense = Lower Red Bars
+            const bars = document.querySelectorAll('.css-chart-container .chart-bar-col .chart-bar');
+            if (bars.length > 0) {
+                // Last 2 bars are "Current Months" (indexes 3, 4)
+                // Bar height % = Risk * Factor
+
+                // 4th bar (Warning)
+                bars[3].style.height = `${Math.min(80, netRisk * 0.8)}%`;
+                bars[3].style.backgroundColor = netRisk > 50 ? 'var(--warning)' : '#374151';
+
+                // 5th bar (Danger)
+                bars[4].style.height = `${Math.min(100, netRisk)}%`;
+                bars[4].style.backgroundColor = netRisk > 60 ? 'var(--danger)' : (netRisk > 40 ? 'var(--warning)' : '#374151');
+            }
+        }
+    </script>
+</body>
+
+</html>
