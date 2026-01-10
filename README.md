@@ -100,16 +100,9 @@ http://localhost:PORT
 ---
 
 ## ER Diyagramı
+Aşağıda, uygulamada kullanılan veritabanı yapısını gösteren ER diyagramı yer almaktadır.
 
-Veritabanı yapısını gösteren ER diyagramı proje ana dizininde bulunmaktadır.
-
-Dosya adı:
-
-```
-ErdiagramiKDSProje.png
-```
-
----
+![ER Diyagramı](ErdiagramiKDSProje.png)
 
 ## Ortam Değişkenleri
 
