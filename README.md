@@ -102,7 +102,7 @@ http://localhost:PORT
 ## ER Diyagramı
 Aşağıda, uygulamada kullanılan veritabanı yapısını gösteren ER diyagramı yer almaktadır.
 
-![ER Diyagramı](ErdiagramiKDSProje.png)
+![ER Diyagramı](./ErdiagramiKDSProje.png)
 
 ## Ortam Değişkenleri
 
